@@ -1,0 +1,267 @@
+<?php
+/**
+ * Ability to mass price adjust using rules.
+ * 
+ * @package		PriceAdjust
+ * @author		Micheal Morgan <micheal@morgan.ly>
+ * @copyright	(c) 2014 Micheal Morgan
+ * @license		MIT
+ */
+	$helper = Mage::helper('priceadjust')->setup();
+	
+	$stores 	= $helper->get_stores();  
+	$config 	= $helper->get_config();
+	$products 	= $helper->get_products(); 
+
+	$post = $this->getRequest()->getPost();
+
+	$catalog = array();	
+	
+	if ( ! empty($post))
+	{
+		if (isset($post['submit']))
+		{
+			$commit = (isset($post['submit']['adjust'])) ? TRUE : FALSE;
+	
+			$catalog = $helper->process($commit);
+		}
+		
+		if (isset($post['save_rules']))
+		{
+			$helper->save_rules();
+		}
+	}
+	
+	$rules = $helper->get_rules();
+?>
+
+<script type="text/javascript">
+
+	var PriceAdjust = {};
+	
+	PriceAdjust = {
+		index: 0,
+		add: function (value_1, value_2, value_3, value_4)
+		{
+			this.index++;
+			var data = {index:this.index};
+			
+			Element.insert($('priceadjust_row_container'), {bottom: this.template.evaluate(data)});
+	
+			$('rule_weight_begin' + this.index).disabled 	= false;
+			$('rule_weight_end' + this.index).disabled 		= false;
+			$('rule_type' + this.index).disabled 			= false;
+			$('rule_value' + this.index).disabled 			= false;
+
+			$('rule_weight_begin' + this.index).value 				= value_1;
+			$('rule_weight_end' + this.index).value 				= value_2;
+			$('rule_type' + this.index).options[value_3].selected 	= true;
+			$('rule_value' + this.index).value 						= value_4;
+		},
+		deleteRow: function (event) 
+		{
+			var row = Event.findElement(event, 'tr');
+			
+			if (row) 
+			{
+				row.parentNode.removeChild(row)
+			}
+		}
+	}
+
+</script>
+
+<form id="edit_form" method="post" action="">
+
+	<input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>" />
+
+	<div class="content-header">
+		<h3 class="icon-head head-products"><?php echo __('Mass Price Adjust'); ?></h3>
+		<div class="form-buttons">
+			<button class="scalable save" type="submit" name="submit[adjust]"><span><?php echo __('Mass Adjust'); ?></span></button>
+			<button class="scalable save" type="submit" name="submit[preview]"><span><?php echo __('Preview'); ?></span></button>
+		</div>
+	</div>
+
+	<p><?php echo __('Price is derived from the corresponding product within the "Source" site. The first rule the weight falls between, the price is multiplied against the "Multiple" and set as the price of the product at the "Target" site. If the product doesn\'t exist at either the target or source site, the adjustment is not applied. Also, if the weight is not found within the rules, the adjustment is not applied.'); ?></p><br />
+
+	<div class="box-left">
+
+		<div class="entry-edit">
+		
+			<div class="entry-edit-head"><h4 class="icon-head"><?php echo __('Settings'); ?></h4></div>
+	
+			<fieldset>
+				<table cellspacing="0" class="form-list">
+					<tr>
+						<td class="label">
+							<strong><?php echo __('Products'); ?></strong>
+							<a href="<?php echo $this->getUrl('enhancedgrid/catalog_product'); ?>" title="To select specific products, click here to use mass action [Adjust Price]">(?)</a>
+						</td>
+						<td><em><?php echo (($products == NULL) ? __('All') : count($products)) . ' ' . __('Products Selected'); ?></em></td>
+					</tr>					
+					<tr>
+						<td class="label"><strong><?php echo __('Source Site'); ?></strong> <span class="required">*</span></td>
+						<td class="input-ele">
+						
+							<select class="required-entry" name="website[source]" style="width: 100%;">
+							
+								<?php foreach ($stores as $store_id => $store_name): ?>
+								
+									<option value="<?php echo $store_id; ?>"<?php echo (($config['store']['source'] == $store_id) ? ' selected' : '') ?>><?php echo $store_name; ?></option>
+									
+								<?php endforeach; ?>
+							
+							</select>
+							
+						</td>
+					</tr>
+					<tr>
+						<td class="label"><strong><?php echo __('Target Site'); ?></strong> <span class="required">*</span></td>
+						<td class="input-ele">
+						
+							<select class="required-entry" name="website[target]" style="width: 100%;">
+							
+								<?php foreach ($stores as $store_id => $store_name): ?>
+								
+									<option value="<?php echo $store_id; ?>"<?php echo (($config['store']['target'] == $store_id) ? ' selected' : '') ?>><?php echo $store_name; ?></option>
+									
+								<?php endforeach; ?>
+							
+							</select>
+							
+						</td>
+					</tr>	
+					<tr>
+						<td class="label"><strong><?php echo __('Save Rules'); ?></strong></td>
+						<td class="input-ele">
+						
+						 	<input type="checkbox" name="save_rules" value="1"<?php echo (isset($post['save_rules'])) ? ' checked' : '' ?> />
+							
+						</td>
+					</tr>
+				</table>
+			</fieldset>
+				   
+		</div>
+
+	</div>
+	
+	<div class="box-right">
+
+		<div class="entry-edit">
+		
+			<div class="entry-edit-head"><h4 class="icon-head"><?php echo __('Markup Rules'); ?></h4></div>
+			
+			<div class="grid">
+				<table cellspacing="0" class="data">
+					<thead>
+						<tr class="headings">
+							<th><?php echo __('Begin Weight'); ?> <span class="required">*</span></th>
+							<th><?php echo __('End Weight'); ?> <span class="required">*</span></th>
+							<th><?php echo __('Type'); ?> <span class="required">*</span></th>							
+							<th><?php echo __('Value'); ?> <span class="required">*</span></th>
+							<th class="last"><?php echo __('Action'); ?></th>
+						</tr>
+					</thead>
+					<tbody id="priceadjust_row_container">
+						<tr id="priceadjust_row_template" class="template no-display">
+							<td><input class="input-text number-title required-entry" type="text" name="rules[__index__][weight_begin]" id="rule_weight_begin__index__" value="" disabled="disabled" /></td>
+							<td><input class="input-text number-title required-entry" type="text" name="rules[__index__][weight_end]" id="rule_weight_end__index__" value="" disabled="disabled" /></td>
+							<td>
+								 <select class="required-entry" name="rules[__index__][type]" id="rule_type__index__" disabled="disabled">
+								 	<option value="0" selected>Multiply</option>
+								 	<option value="1">Addition</option>
+								 	<option value="2">Subtract</option>
+								 	<option value="3">Divide</option>
+								 </select>
+							</td>
+							<td><input class="input-text number-title required-entry" type="text" name="rules[__index__][value]" id="rule_value__index__" value="" disabled="disabled" /></td>
+							<td class="last"><a href="#" onclick="PriceAdjust.deleteRow(event);return false"><?php echo $this->__('Delete'); ?></a></td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="5" class="a-center last">
+								<button onclick="PriceAdjust.add(0,0,0,0)" class="scalable" type="button"><span><?php echo __('Add Rule'); ?></span></button>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<div class="clear"></div>
+	
+</form>
+
+<?php if ( ! empty($catalog)): ?>
+
+<div class="entry-edit">
+		
+	<div class="entry-edit-head"><h4 class="icon-head"><?php echo __('Price Adjustments'); ?></h4></div>
+		   
+		<div class="grid">
+			<table cellspacing="0" class="data">
+				<thead>
+					<tr class="headings">
+						<th><?php echo __('Product ID'); ?></th>
+						<th><?php echo __('SKU'); ?></th>
+						<th><?php echo __('Name'); ?></th>
+						<th><?php echo __('Weight'); ?></th>
+						<th><?php echo __('Original Price'); ?></th>
+						<th><?php echo __('Percent Change'); ?></th>
+						<th><?php echo __('Difference'); ?></th>
+						<th><?php echo __('New Price'); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+		
+				<?php foreach ($catalog as $product): ?>
+				
+	  				<tr>
+						<td><?php echo $product['id']; ?></td>
+						<td><?php echo $product['sku']; ?></td>
+						<td><?php echo $product['name']; ?></td>
+						<td><?php echo number_format($product['weight'], 3, '.', ''); ?></td> 
+						<td><?php echo $helper->format_price($product['price']); ?></td>
+						<td><?php echo number_format($product['change_percent'], 2, '.', ''); ?>%</td>
+						<td><?php echo $helper->format_price($product['change_difference']); ?></td>
+						<td><?php echo $helper->format_price($product['change_price']); ?></td>
+					</tr>
+				
+				<?php endforeach; ?>
+		
+				</tbody>
+			</table>
+		</div>
+		
+	</div>
+</div>
+
+<?php endif; ?>
+
+<script type="text/javascript">
+
+	var editForm = new varienForm('edit_form');
+
+	PriceAdjust.template = new Template('<tr>' + $('priceadjust_row_template').innerHTML.replace(/__index__/g, '#{index}') + '<\/tr>');
+
+	<?php if ( ! empty($rules)): ?>
+	
+		<?php foreach ($rules as $rule): ?>
+		
+			PriceAdjust.add(<?php echo $rule['weight_begin']; ?>, <?php echo $rule['weight_end']; ?>, <?php echo $rule['type']; ?>, <?php echo $rule['value']; ?>);
+		
+		<?php endforeach; ?>
+
+	<?php else: ?>
+
+		PriceAdjust.add(0,0,0,0);
+	
+	<?php endif; ?>
+
+</script>

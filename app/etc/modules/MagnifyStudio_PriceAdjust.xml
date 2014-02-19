@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<MagnifyStudio_PriceAdjust>
+			<active>true</active>
+			<codePool>community</codePool>
+		</MagnifyStudio_PriceAdjust>
+	</modules>
+</config>

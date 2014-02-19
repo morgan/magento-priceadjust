@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout>
+	<priceadjust_adjust_price>
+		<reference name="content">
+			<block type="core/template" name="priceadjust" template="magnifystudio/priceadjust/priceadjust.phtml" />
+		</reference>
+	</priceadjust_adjust_price>
+</layout>
