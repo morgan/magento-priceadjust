@@ -1,19 +1,25 @@
 # Magento PriceAdjust
 
-PriceAdjust is an advanced tool for mass updating products using rules in Magento. Below is a comprehensive list of features:
+PriceAdjust is an advanced tool for mass updating products using custom rules. Below is a comprehensive list of features:
 
-- Select individual or all products 
+- Select individual or all products for a given store.
+- Create one or more rules that apply the chosen type of arithmetic to the products price based on a weight range.
+- Current arithmetic types are `Multiply`, `Addition`, `Subtract` and `Divide`
+- Ability to save rules for repeat mass price adjustments.
+- Advanced ability of choosing a `Source` store for the products price and then applying the rules to a `Target` store.
+- Can preview selected products proposed price adjustments before committing to the mass adjustment
 
 ## Getting Started
 
 After installation, to get started with PriceAdjust:
 
-1. Login to Magento Admin Panel
-2. Go to `Catalog`, `Manage Products`
-3. Select individual products or `Select All`
-4. Choose `Price Adjust` from `Actions` dropdown and click `Submit`
-5. From here, rules can be added based on weight. If simple addition or subtraction is desired for all products, set `Begin Weight` to `0` and `End Weight` to a very large number. From there, the type of arithmetic can be chosen. 
-6. Be sure to `Preview` the adjustment before commiting and clicking `Mass Adjust`
+1. Login to Magento Admin Panel.
+2. Go to `Catalog`, `Manage Products`.
+3. Select individual products or `Select All`.
+4. Choose `Price Adjust` from `Actions` drop-down and click `Submit`.
+5. From here, rules can be added based on weight. If simple increase or decrease of product prices is desired for all selected products, set `Begin Weight` to `0` and `End Weight` to a large number. From there, the type of arithmetic can be chosen. 
+6. Be sure to `Preview` the adjustment before committing and clicking `Mass Adjust`.
+7. If Magento installation has multiple stores, be mindful of which `Source` and `Target` store is selected.
 
 Important: It is recommended and best practice to backup your database before performing any mass action in a production environment. 
 
