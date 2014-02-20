@@ -1,5 +1,7 @@
 # Magento PriceAdjust
 
+![PriceAdjust Screenshot](screenshot.png)
+
 PriceAdjust is an advanced tool for mass updating products using custom rules. Below is a comprehensive list of features:
 
 - Select individual or all products for a given store.
