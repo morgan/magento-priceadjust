@@ -47,8 +47,6 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
 			
 			$this->_config['store']['source'] = (isset($post['website']['source'])) ? $post['website']['source'] : key($stores);
 			
-			end($stores);
-			
 			$this->_config['store']['target'] = (isset($post['website']['target'])) ? $post['website']['target'] : key($stores);
 			
 			if ( ! empty($post) && isset($post['rules']))
