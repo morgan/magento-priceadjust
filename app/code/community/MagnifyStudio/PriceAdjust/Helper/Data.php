@@ -208,6 +208,7 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
 	 * @access	public
 	 * @param	float	Product weight
 	 * @param	float	Product price
+     * @param   float   Product special_price
 	 * @return	float|bool
 	 */
 	public function rules($weight, $price, $special_price=false)
@@ -350,6 +351,7 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
 	 * @access	protected
 	 * @param	int			Product ID
 	 * @param	float		Product Price
+     * @param   float       Product Special Price
 	 * @return	self
 	 */
 	protected function _update_product($product_id, $price, $special_price=false)
