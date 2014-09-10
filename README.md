@@ -1,5 +1,5 @@
 # Magento PriceAdjust
-
+ 
 PriceAdjust is an advanced Magento tool for mass updating product prices using custom rules.
 
 ![PriceAdjust Screenshot](screenshot.png)
@@ -12,7 +12,7 @@ PriceAdjust is an advanced Magento tool for mass updating product prices using c
 - Ability to save rules for repeat mass price adjustments.
 - Advanced ability of choosing a `Source` store for the products price and then applying the rules to a `Target` store.
 - Can preview selected products proposed price adjustments before committing to the mass adjustment
-- Ability ro apply same rules to special prices
+- Ability ro apply same rules to special prices;
 
 ## Getting Started
 
