@@ -49,9 +49,11 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
 			
 			$this->_config['store']['target'] = (isset($post['website']['target'])) ? $post['website']['target'] : key($stores);
 
-            $this->_config['apply_rule_to_special_prices'] = (isset($post['apply_rule_to_special_prices']) ? true : false );
-			
-			if ( ! empty($post) && isset($post['rules']))
+            $this->_config['apply_to_price'] = (isset($post['apply_to_price']) ? true : false );
+            $this->_config['apply_to_special_price'] = (isset($post['apply_to_special_price']) ? true : false );
+
+
+            if ( ! empty($post) && isset($post['rules']))
 			{
 				$this->set_rules($post['rules']);
 			}
@@ -211,7 +213,7 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
      * @param   float   Product special_price
 	 * @return	float|bool
 	 */
-	public function rules($weight, $price, $special_price=false)
+	public function rules($weight, $price=false, $special_price=false)
 	{
 		$change = array
 		(
@@ -254,17 +256,17 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
                         $_special_price = $special_price / $rule['value'];
 						break;
 				}
-			
-				if ($_price != FALSE)
-				{
-					$change['difference'] 	= $_price - $price;
-					$change['percent']		= ($price != 0) ? ($_price - $price) / $price * 100 : 0;
-					$change['price']		= $_price;
-                    if ($special_price)
-                        $change['special_price']	= $_special_price;
-				}
-				
-				break;
+
+                if ($_price != FALSE && $price) {
+                    $change['difference'] = $_price - $price;
+                    $change['percent'] = ($price != 0) ? ($_price - $price) / $price * 100 : 0;
+                    $change['price'] = $_price;
+                }
+                if ($_special_price != FALSE && $special_price) {
+                    $change['special_price'] = $_special_price;
+                }
+
+                break;
 			}
 		}
 		
@@ -304,7 +306,10 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
 		foreach ($collection as $product)
 		{
 
-            $change = $this->rules($product->getWeight(), $product->getPrice(), $product->getSpecialPrice());
+            $price = $this->_config['apply_to_price'] ? $product->getPrice() : false;
+            $special_price = $this->_config['apply_to_special_price'] ?  $product->getSpecialPrice()  : false;
+
+            $change = $this->rules($product->getWeight(), $price, $special_price );
 		
 			$_product = array
 			(
@@ -316,11 +321,9 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
                 'special_price'		=> $product->getSpecialPrice(),
 				'change_difference'	=> $change['difference'],
 				'change_percent'	=> $change['percent'],
-				'change_price'		=> $change['price']
+				'change_price'		=> $change['price'],
+                'change_special_price' => $change['special_price']
 			);
-            if ($this->_config['apply_rule_to_special_prices']) {
-                $_product['change_special_price'] = $change['special_price'];
-            }
 			
 			$catalog[] = $_product;
 			
@@ -328,10 +331,9 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
 			{
 				$count++;
 
-                if ($this->_config['apply_rule_to_special_prices'])
-				    $this->_update_product($product->getId(), $change['price'], $change['special_price']);
-                else
-                    $this->_update_product($product->getId(), $change['price']);
+                $price = $this->_config['apply_to_price'] ? $change['price'] : false;
+                $special_price = $this->_config['apply_to_special_price'] ? $change['special_price'] : false;
+                $this->_update_product($product->getId(), $price, $special_price );
 			}
 		}
 		
@@ -354,7 +356,7 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
      * @param   float       Product Special Price
 	 * @return	self
 	 */
-	protected function _update_product($product_id, $price, $special_price=false)
+	protected function _update_product($product_id, $price=false, $special_price=false)
 	{
 		static $product_model;
 	
@@ -369,11 +371,14 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
 			->load($product_id)
 			->setIsMassupdate(TRUE)
 			->setExcludeUrlRewrite(TRUE);
-			
-		$product_model->addData(array
-		(
-			'price'	=> $price
-		));
+
+        if ($price) {
+            $product_model->addData(array
+            (
+                'price'	=> $price
+            ));
+        }
+
         if ($special_price) {
             $product_model->addData(array
             (
@@ -395,6 +400,6 @@ class MagnifyStudio_PriceAdjust_Helper_Data extends Mage_Core_Helper_Abstract
 	 */
 	public function format_price($price)
 	{
-		return '$' . number_format($price, 2, '.', '');
+		return  number_format($price, 2, '.', '');
 	}
 }

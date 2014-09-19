@@ -141,10 +141,11 @@
 						</td>
 					</tr>
                     <tr>
-                        <td class="label"><strong><?php echo __('Apply rule to special prices'); ?></strong></td>
+                        <td class="label"><strong><?php echo __('Apply rules to'); ?></strong></td>
                         <td class="input-ele">
 
-                            <input type="checkbox" name="apply_rule_to_special_prices" value="1"<?php echo (isset($post['apply_rule_to_special_prices'])) ? ' checked' : '' ?> />
+                            <input type="checkbox" name="apply_to_price" value="1" <?php echo $post['apply_to_price'] ? 'checked="checked"' : ''  ?>  >  <?php echo __('Apply to (base) prices'); ?><br/>
+                            <input type="checkbox" name="apply_to_special_price" value="1" <?php echo $post['apply_to_special_price'] ? 'checked="checked"' : ''  ?> > <?php echo __('Apply to special prices'); ?>
 
                         </td>
                     </tr>
@@ -223,8 +224,13 @@
 						<th><?php echo __('Original Price'); ?></th>
 						<th><?php echo __('Percent Change'); ?></th>
 						<th><?php echo __('Difference'); ?></th>
-						<th><?php echo __('New Price'); ?> / <?php echo __('New Sp. Price'); ?></th>
-					</tr>
+						<th><?php echo __('New Price'); ?></th>
+
+                        <th><?php echo __('Original Special Price'); ?></th>
+
+                        <th><?php echo __('New Special Price'); ?></th>
+
+                    </tr>
 				</thead>
 				<tbody>
 		
@@ -235,13 +241,12 @@
 						<td><?php echo $product['sku']; ?></td>
 						<td><?php echo $product['name']; ?></td>
 						<td><?php echo number_format($product['weight'], 3, '.', ''); ?></td> 
-						<td><?php echo $helper->format_price($product['price']); ?></td>
-						<td><?php echo number_format($product['change_percent'], 2, '.', ''); ?>%</td>
-						<td><?php echo $helper->format_price($product['change_difference']); ?></td>
-						<td><?php echo $helper->format_price($product['change_price']); ?>
-                            <?php if ($product['change_special_price']) { echo " / ".$helper->format_price($product['change_special_price']); } ?>
-                        </td>
-
+						<td><?php if ($product['price']) echo $helper->format_price($product['price']); ?></td>
+						<td><?php if ($product['change_percent']) echo number_format($product['change_percent'], 2, '.', '').'%'; ?></td>
+						<td><?php if ($product['change_difference']) echo $helper->format_price($product['change_difference']); ?></td>
+						<td><?php if ($product['change_price']) echo $helper->format_price($product['change_price']); ?></td>
+                        <td><?php if ($product['special_price']) echo $helper->format_price($product['special_price']); ?></td>
+                        <td><?php if ($product['change_special_price']) echo $helper->format_price($product['change_special_price']); ?></td>
 					</tr>
 				
 				<?php endforeach; ?>
