@@ -1,0 +1,12 @@
+{
+    "name": "wansoft/magento-priceadjust",
+    "description": "PriceAdjust is an advanced Magento tool for mass updating product prices using custom rules. Forked from morgan/magento-priceadjust.",
+    "authors": [
+        {
+            "name":"Fabrizio Vanzani"
+        }
+     ],
+    "version": "1.0.1",
+    "license":"MIT"
+
+}
