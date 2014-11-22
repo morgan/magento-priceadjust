@@ -1,0 +1,4 @@
+app/code/community/MagnifyStudio/PriceAdjust app/code/community/MagnifyStudio/PriceAdjust
+app/design/adminhtml/default/default/layout/magnifystudio_priceadjust.xml app/design/adminhtml/default/default/layout/magnifystudio_priceadjust.xml
+app/design/adminhtml/default/default/template/magnifystudio/priceadjust app/design/adminhtml/default/default/template/magnifystudio/priceadjust
+app/etc/modules/MagnifyStudio_PriceAdjust.xml app/etc/modules/MagnifyStudio_PriceAdjust.xml
